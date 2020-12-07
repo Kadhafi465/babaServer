@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
-      customerId: DataTypes.INTEGER,
+      userId: DataTypes.INTEGER,
     },
     {
       sequelize,

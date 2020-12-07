@@ -8,6 +8,7 @@ class UserController {
     let option = { where: { email } };
     User.findOne(option)
       .then((data) => {
+        console.log("masuk");
         if (data) {
           res.status(400).json({
             message: "User already exist",
@@ -25,6 +26,7 @@ class UserController {
         }
       })
       .then((user) => {
+        console.log("sini");
         const token = jwt.sign(
           {
             id: user.id,
@@ -80,7 +82,7 @@ class UserController {
   static getAll(req, res) {
     User.findAll()
       .then((data) => {
-        res.status(200).json(data);
+        res.status(200).json({ data });
       })
       .catch((err) => {
         res.status(500).json({
