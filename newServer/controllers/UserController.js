@@ -58,12 +58,14 @@ class UserController {
               {
                 id: user.id,
                 email: user.email,
+                role: user.role
               },
               process.env.SECRET
             );
             const nama = user.nama;
+            const role = user.role;
             console.log("Betul");
-            res.status(201).json({ nama, token });
+            res.status(201).json({ nama, token, role });
           } else {
             res.status(400).json({
               message: "wrong password",

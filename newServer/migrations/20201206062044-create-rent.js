@@ -23,6 +23,9 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER
       },
+      bukti_transfer: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

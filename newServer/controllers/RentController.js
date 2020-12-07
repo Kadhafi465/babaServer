@@ -1,8 +1,9 @@
-const { Rent } = require("../models");
+const { Rent, User } = require("../models");
+const baseUrl = require("../helpers/baseUrl");
 
 class RentController {
   static getAll(req, res) {
-    Rent.findAll()
+    Rent.findAll({ include: [{ model: User, required: false }] })
       .then((data) => {
         res.status(200).json({ data });
       })
@@ -33,84 +34,59 @@ class RentController {
       });
   }
 
-  static create(req, res) {
-    const { tanggal, jam, tarif, status_sewa } = req.body;
-    let option = { where: { tanggal } };
-    let check = { where: { jam } };
-    Rent.findOne(option)
-      // .then((date) => {
-      //   if (date) {
-      //     res.status(400).json({
-      //       message: "tanggal already exist",
-      //     });
-      //   } else {
-      //     return Rent.findOne(check);
-      //   }
-      // })
-      // .then((data) => {
-      //   if (data) {
-      //     res.status(400).json({
-      //       message: "time already exist",
-      //     });
-      //   } else {
-      //     console.log("bikin jadwal");
-      //     return Rent.create({
-      //       tanggal,
-      //       jam,
-      //       tarif,
-      //       status_sewa,
-      //       userId: req.user.id,
-      //     });
-      //   }
-      // })
-      // .then((data) => {
-      //   res.status(201).json({
-      //     message: "Book Success",
-      //     data,
-      //   });
-      // })
-      // .catch((err) => {
-      //   console.log("error bos");
-      //   if (err.errors) {
-      //     let errData = [];
-      //     for (let i = 0; i < err.errors.length; i++) {
-      //       errData.push(err.errors[i].message);
-      //     }
-      //     res.status(400).json({
-      //       message: errData,
-      //     });
-      //   } else {
-      //     res.status(500).json({
-      //       message: "Internal Server Error",
-      //     });
-      //   }
-      // });
-      .then((date) => {
-        if (date) {
-          
-        }
-      })
+  static create = async(req, res) => {
+    try {
+      const { tanggal, jam, tarif, status_sewa } = req.body;
+      const userId = req.user.id
+      const checkTime = await Rent.findOne({ where: { tanggal, jam } });
+      if (checkTime) throw { msg: "Tanggal dan Jam sudah di booking" };
+      const result = await Rent.create({ tanggal, jam, tarif, status_sewa, userId });
+      res.status(201).json({
+        message: "Book Success",
+        data: result,
+      });
+    } catch (err) {
+      if (err.msg) res.status(400).json(err);
+      else res.status(500).json({ message: "Internal Server Error" });
+    }
   }
 
-  static update(req, res) {
-    let option = { where: { id: req.params.id } };
-    const { status_sewa } = req.body;
-    let input = { status_sewa };
-    Rent.update(input, option)
-      .then((data) => {
-        if (data) {
-          res.status(200).json({ message: "Book Success", data });
-        } else {
-          res.status(404).json({
-            message: "Book not found",
-          });
-        }
-      })
-      .catch((err) => {
+  static update = async(req, res) => {
+    try {
+      let option = { where: { id: req.params.id } };
+      const rentData = await Rent.findOne(option);
+      if (!rentData) throw { msg: "Data Not Found" };
+      const { status_sewa } = req.body;
+      let input = { status_sewa };
+      if (req.user.role === 'admin') {
+        if (rentData.bukti_transfer === "") throw { msg: "Butuh bukti transfer sebelum approve" };
+        if (!status_sewa) throw { msg: "Butuh status sewa" };
+        Rent.update(input, option)
+        .then((data) => {
+          if (data) {
+            res.status(200).json({ message: "Book Success" });
+          } else {
+            res.status(404).json({
+              message: "Book not found",
+            });
+          }
+        })
+      } else {
+        if (!req.file) throw { msg: "Bukti Tranfer Dibutuhkan" };
+        await Rent.update({
+          bukti_transfer: baseUrl + req.file.path
+        }, option);
+        res.status(200).json({ message: "Berhasil" });
+      }
+    } catch (err) {
+      if (err.msg) {
+        res.status(400).json({ message: err.msg });
+      } else {
         res.status(500).json({
           message: "Internal Service Error",
         });
-      });
+      }
+    }
   }
 
   static delete(req, res) {

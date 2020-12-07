@@ -55,6 +55,10 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       userId: DataTypes.INTEGER,
+      bukti_transfer: {
+        type: DataTypes.STRING,
+        defaultValue: ""
+      },
     },
     {
       sequelize,
