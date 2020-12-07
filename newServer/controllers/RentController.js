@@ -72,6 +72,7 @@ class RentController {
           }
         })
       } else {
+        if (req.user.id != rentData.userId) throw { msg: "Forbidden Access" };
         if (!req.file) throw { msg: "Bukti Tranfer Dibutuhkan" };
         await Rent.update({
           bukti_transfer: baseUrl + req.file.path
