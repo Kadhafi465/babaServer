@@ -31,10 +31,11 @@ class UserController {
           {
             id: user.id,
             email: user.email,
+            role: user.role
           },
           process.env.SECRET
         );
-        res.status(201).json({ nama, token });
+        res.status(201).json({ nama, token, role });
       })
       .catch((err) => {
         res.status(500).json({
