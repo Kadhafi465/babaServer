@@ -3,11 +3,20 @@ const baseUrl = require("../helpers/baseUrl");
 
 class RentController {
   static getAll(req, res) {
-    const { user } = req.query;
+    Rent.findAll({ include: [{ model: User, required: false }] })
+      .then((data) => {
+        res.status(200).json({ data });
+      })
+      .catch((err) => {
+        res.status(500).json({
+          message: "Internal Server Error",
+        });
+      });
+  }
+
+  static getAllUser(req, res) {
     const { id } = req.user;
-    let query = { include: [{ model: User, required: false }] };
-    if (user) query.where = { userId: id };
-    Rent.findAll(query)
+    Rent.findAll({ where: { userId: id }, include: [{ model: User, required: false }] })
       .then((data) => {
         res.status(200).json({ data });
       })

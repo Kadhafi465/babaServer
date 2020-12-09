@@ -18,6 +18,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get("/", RentController.getAll);
+router.get("/all-user", authentication, RentController.getAllUser);
 router.get("/:id", RentController.getOne);
 router.post("/", authentication, RentController.create);
 router.put("/:id", authentication, upload.single("bukti_transfer"), RentController.update);
