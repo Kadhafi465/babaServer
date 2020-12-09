@@ -5,6 +5,7 @@ const port = process.env.PORT || 3001;
 const router = require("./routes");
 const cors = require("cors");
 
+app.use('/uploads', express.static('uploads'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
