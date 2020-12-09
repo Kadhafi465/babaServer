@@ -66,7 +66,7 @@ class UserController {
             const nama = user.nama;
             const role = user.role;
             console.log("Betul");
-            res.status(201).json({ nama, token, role });
+            res.status(201).json({ nama, token, role, user });
           } else {
             res.status(400).json({
               message: "wrong password",
