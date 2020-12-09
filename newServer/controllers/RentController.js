@@ -104,30 +104,35 @@ class RentController {
   }
 
   static delete(req, res) {
-    const option = { where: { id: req.params.id } };
-    let deleteData = null;
-    Rent.findOne(option)
-      .then((data) => {
-        if (!data) {
-          res.status(404).json({
-            message: "Data Not Found",
+    try {
+      const option = { where: { id: req.params.id } };
+      if (req.user.role !== "admin") throw { message: "Bukan admin" };
+      let deleteData = null;
+      Rent.findOne(option)
+        .then((data) => {
+          if (!data) {
+            res.status(404).json({
+              message: "Data Not Found",
+            });
+          } else {
+            deleteData = data;
+            return Rent.destroy(option);
+          }
+        })
+        .then(() => {
+          res.status(200).json({
+            deleteData,
+            message: "Has been Deleted",
           });
-        } else {
-          deleteData = data;
-          return Rent.destroy(option);
-        }
-      })
-      .then(() => {
-        res.status(200).json({
-          deleteData,
-          message: "Has been Deleted",
+        })
+        .catch((err) => {
+          res.status(500).json({
+            message: "Internal server Error",
+          });
         });
-      })
-      .catch((err) => {
-        res.status(500).json({
-          message: "Internal server Error",
-        });
-      });
+    } catch (err) {
+      res.status(401).json(err);
+    }
   }
 }
 

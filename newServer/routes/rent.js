@@ -22,6 +22,6 @@ router.get("/all-user", authentication, RentController.getAllUser);
 router.get("/:id", RentController.getOne);
 router.post("/", authentication, RentController.create);
 router.put("/:id", authentication, upload.single("bukti_transfer"), RentController.update);
-router.delete("/:id", authentication, authorization, RentController.delete);
+router.delete("/:id", authentication, RentController.delete);
 
 module.exports = router;
