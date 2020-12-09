@@ -1,1 +1,1 @@
-module.exports = "http://babafutsal.xyz/"
+module.exports = "https://dev.babafutsal.xyz/"
